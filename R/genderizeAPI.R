@@ -6,6 +6,8 @@
 #' 
 #' 
 #' @param x A vector of terms to check in genderize.io database.
+#' @param apikey A character string with the API key obtained via https://store.genderize.io. A default is NULL, which uses the free API plan.
+#' @param ssl.verifypeer Checks the SSL Cerftificate. Default is TRUE. 
 #'
 #' @return A data frame with names' gener probabilities and counts. NULL if a given name is not located in the genderize.io database.
 #' 
@@ -27,7 +29,7 @@
 #' }
 
  
-genderizeAPI = function (x) {
+genderizeAPI = function (x, apikey = NULL, ssl.verifypeer = TRUE) {
 
     #require(jsonlite)
   
@@ -38,43 +40,117 @@ genderizeAPI = function (x) {
     termsQuery = x
     
     # checking for 'like' error that crashing API
-    termsQuery[stringr::str_detect(x, "^like$")]='likeERROR'
+    # termsQuery[stringr::str_detect(x, "^like$")]='likeERROR'
+
     
-    query = 
-        paste0('http://api.genderize.io?name[0]=',
-               termsQuery[1],
-                   paste0(rep(
-                       paste0('&name[',
-                              1:(length(termsQuery)-1),
-                              ']='),1),
-                       termsQuery[-1],
-                       collapse = "")) 
+#     query = 
+#         paste0('https://api.genderize.io?name[0]=',
+#                termsQuery[1],
+#                    paste0(rep(
+#                        paste0('&name[',
+#                               1:(length(termsQuery)-1),
+#                               ']='),1),
+#                        termsQuery[-1],
+#                        collapse = "")) 
+#     
+#     
+#     if (length(termsQuery)==1) {
+#         
+#         query = paste0('https://api.genderize.io?name[0]=',
+#                termsQuery[1]) 
+#         
+#         
+#     }
     
     
-    if (length(termsQuery)==1) {
-        
-        query = paste0('http://api.genderize.io?name[0]=',
-               termsQuery[1]) 
-        
-        
-    }
+
+        query = as.list(termsQuery)
+        names(query)  = 
+            paste0('name[',
+                              0:(length(termsQuery)-1),
+                              ']')
+   
+  
+    
  
     ## loop checking connection with server
-    JSON = ""
-    check = 1:10
-      
-    for (i in check) {
+#     JSON = ""
+#     check = 1:10
+#       
+#     for (i in check) {
+#   
+# 
+#         JSON = RCurl::getURL(query, .encoding='UTF-8', ssl.verifypeer = FALSE)
+#       
+#         if (JSON != "") {break} else {
+#             print('Connection error. 
+#                   Waiting for server response...')
+#             Sys.sleep(5)
+#         }
+#     }
+# 
+#   namesTable <- jsonlite::fromJSON(JSON)
   
-        JSON = RCurl::getURL(query, .encoding='UTF-8')
-      
-        if (JSON != "") {break} else {
-            print('Connection error. 
-                  Waiting for server response...')
-            Sys.sleep(5)
+    if (!is.null(apikey)) {
+        
+        query = c('apikey' = apikey, query)
+        
+    }
+     
+        
+       
+    r = httr::GET("https://api.genderize.io", query = query, 
+                  httr::config(ssl.verifypeer = ssl.verifypeer))
+    
+    if (httr::status_code(r) == 200) {
+        
+
+        
+        
+        l = httr::content(r)
+        if (is.atomic(l[[1]])) {l= list(l)}
+        l = l[unlist(lapply(l, function(x) {!is.null(x$gender)}))]
+        
+        limitLeft = as.numeric(httr::headers(r)$'x-rate-limit-remaining')
+        limit = as.numeric(httr::headers(r)$'x-rate-limit-limit')
+        limitReset = as.numeric(httr::headers(r)$'x-rate-reset')
+        
+        
+        return(
+            list(
+                response=data.table::rbindlist(l),
+                        limitLeft=limitLeft, limit=limit, limitReset=limitReset
+                )
+            )
+        
+        
+    } else {
+        
+        cat('\n', httr::http_status(r)$message)
+        cat('\n', httr::content(r)$error)
+        
+        if (httr::status_code(r) == 429){
+            
+            stop('You have used all available requests in this subscription plan.')
+            
         }
+        
+        
+        return
     }
 
-  namesTable <- jsonlite::fromJSON(JSON)
-  namesTable
+  
+  
+  
+  
+  
+  
+  
+  
     
+  
+  
+  
+  
+  
 }
