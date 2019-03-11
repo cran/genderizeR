@@ -17,6 +17,6 @@ library(genderizeR)
 #  ?findGivenNames
 #  ?genderize
 
-## ---- echo=TRUE, eval=FALSE, cache=FALSE---------------------------------
-#  citation('genderizeR')
+## ---- echo=TRUE, eval=TRUE, cache=FALSE----------------------------------
+citation('genderizeR')
 

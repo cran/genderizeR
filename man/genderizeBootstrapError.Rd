@@ -10,7 +10,8 @@ genderizeBootstrapError(x, y, givenNamesDB, probs, counts,
 \arguments{
 \item{x}{A text vector that we want to genderize}
 
-\item{y}{A text vector of true gender labels for x vector}
+\item{y}{A text vector of true gender labels ('female' or 'male') 
+for x vector}
 
 \item{givenNamesDB}{A dataset with gender data (could be an output of \code{findGivenNames} function)}
 
@@ -73,6 +74,5 @@ genderizeBootstrapError(x = x, y = y,
 
 }
 \seealso{
-In the \code{sortinghat} package: \code{\link[sortinghat]{errorest_apparent}} \code{\link[sortinghat]{errorest_loo_boot}} \code{\link[sortinghat]{errorest_632plus}}.
+In the \code{sortinghat} package.
 }
-

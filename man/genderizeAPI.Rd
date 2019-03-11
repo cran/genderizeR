@@ -4,22 +4,39 @@
 \alias{genderizeAPI}
 \title{Getting data from genderize.io  API}
 \usage{
-genderizeAPI(x, apikey = NULL, ssl.verifypeer = TRUE)
+genderizeAPI(x, country = NULL, language = NULL, apikey = NULL,
+  ssl.verifypeer = TRUE)
 }
 \arguments{
 \item{x}{A vector of terms to check in genderize.io database.}
 
-\item{apikey}{A character string with the API key obtained via https://store.genderize.io. A default is NULL, which uses the free API plan.}
+\item{country}{A character string with a country code for localized search
+of names. Country codes follow the ISO_3166-1 alpha-2 standard
+\url{https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2}.}
 
-\item{ssl.verifypeer}{Checks the SSL Certificate. Default is TRUE.}
+\item{language}{A character string with a language code for localized search
+of names. Language codes follow the ISO_639-1 standard: 
+\url{https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes}}
+
+\item{apikey}{A character string with the API key obtained via 
+\url{https://store.genderize.io}. A default is NULL, which uses the free API 
+ plan. If you reached the limit of the API you can start from the last 
+ checked term next time.}
+
+\item{ssl.verifypeer}{If TRUE (default) it checks the SSL Certificate.}
 }
 \value{
-A list of four elements: \code{response} is a data frame with names, genders, probabilities and counts or \code{NULL} if non of the terms are not located in the genderize.io database; \code{limitLeft} is showing how many queries to the API are still possible within the current \code{limit} which will be renewed in \code{limitReset} seconds.
+A list of four elements: \code{response} is a data frame with names, 
+genders, probabilities and counts or \code{NULL} if no terms are found 
+in the genderize.io database; \code{limitLeft} is showing how many API queries 
+are still possible within the current \code{limit} which will be renewed 
+in \code{limitReset} seconds.
 }
 \description{
-\code{genderizeAPI} connects with genderize.io API and checks if 
-a term (one or more) is in the given names database and returns 
-its gender probability and count of the cases recorded in the database.
+The \code{genderizeAPI} function connects to genderize.io API and checks if 
+a term (one or more) is in the genderize.io database and returns 
+predicted gender probability and count of the records with this 
+term in the database.
 }
 \examples{
 \dontrun{
@@ -51,4 +68,3 @@ $limitReset
 }
 
 }
-

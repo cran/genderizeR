@@ -28,9 +28,9 @@
 #' counts of first names in database and probability of gender 
 #' given the first name.  
 #' 
-#' If you need help with your research od commercial projects, 
-#' feel free to contat me via my homepage contact form: 
-#' \url{http://www.wais.kamil.rzeszow.pl/genderizeR} 
+#' If you need help with your research or commercial projects, 
+#' feel free to contact me via my homepage contact form: 
+#' \url{https://kalimu.github.io/} 
 #'
 #' @docType package
 #' 
@@ -44,9 +44,9 @@
 #' 
 #' @seealso 
 #' \itemize{
-#'   \item \url{http://www.wais.kamil.rzeszow.pl/genderizeR} [R package homepage]
+#'   \item \url{https://kalimu.github.io/project/genderizer/} [R package homepage]
 #'   \item \url{https://github.com/kalimu/genderizeR} [source code of the latest development version of the R package]
-#'   \item \url{http://genderize.io/} [Homepage of genderize.io API]
+#'   \item \url{http://genderize.io/} [homepage of genderize.io API]
 #' }
 #' 
 # @export

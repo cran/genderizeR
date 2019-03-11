@@ -4,25 +4,35 @@
 \alias{findGivenNames}
 \title{Getting gender prediction data for a given text vector.}
 \usage{
-findGivenNames(x, textPrepare = TRUE, apikey = NULL, queryLength = 10,
+findGivenNames(x, textPrepare = TRUE, country = NULL,
+  language = NULL, apikey = NULL, queryLength = 10,
   progress = TRUE, ssl.verifypeer = TRUE)
 }
 \arguments{
-\item{x}{A text vector or a character vector of unique terms prepared beforehand.}
+\item{x}{A text vector or a character vector of unique terms 
+pre-processed earlier manually or by the \code{textPrepare} function.}
 
 \item{textPrepare}{If TRUE (default) the \code{textPrepare} function 
 will be used on the \code{x} vector. Set it to FALSE if you already 
 have prepared a character vector of cleaned up and deduplicated terms 
-that you want to send to the API for first name gender checking.}
+that you want to send to the API for gender checking.}
+
+\item{country}{A character string with a country code for localized search
+of names. Country codes follow the ISO_3166-1 alpha-2 standard
+\url{https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2}.}
+
+\item{language}{A character string with a language code for localized search
+of names. Language codes follow the ISO_639-1 standard: 
+\url{https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes}}
 
 \item{apikey}{A character string with the API key obtained via 
-https://store.genderize.io. A default is NULL, which uses the free API plan.
- If you reached the limit of the API you can start from the last checked 
- term next time.}
+\url{https://store.genderize.io}. A default is NULL, which uses the free API 
+ plan. If you reached the limit of the API you can start from the last 
+ checked term next time.}
 
-\item{queryLength}{How much terms can be checked in a one single query}
+\item{queryLength}{How much terms can be checked in a one single query.}
 
-\item{progress}{If TRUE (default) progress bar is displayed in the console}
+\item{progress}{If TRUE (default) progress bar is displayed in the console.}
 
 \item{ssl.verifypeer}{Checks the SSL Certificate. Default is TRUE. 
 You may set it to FALSE if you encounter some errors that break 
@@ -35,11 +45,11 @@ probabilities of gender predictions,
 and counts how many people with a given name is recorded in the database.
 }
 \description{
-\code{findGivenNames} extracts from text unique terms and gets 
-the gender predicion for all these terms.
+\code{findGivenNames} extracts from text unique terms and predicts  
+gender for them.
 }
 \examples{
-\dontrun{
+\donttest{
 
 x = "Tom did play hookey, and he had a very good time. He got back home 
      barely in season to help Jim, the small colored boy, saw next-day's wood 
@@ -68,7 +78,15 @@ foundNames[count > 100]
 # 3: polly female        0.99   191
 # 4:   tom   male        1.00  3736
 
+
+# localization
+findGivenNames("andrea", country = "us")
+#      name gender probability count
+# 1: andrea female        0.97  2308
+
+findGivenNames("andrea", country = "it")
+#      name gender probability count
+# 1: andrea  male         0.99  1070
 }
 
 }
-

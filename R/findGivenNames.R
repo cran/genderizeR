@@ -1,20 +1,27 @@
 #' Getting gender prediction data for a given text vector.
 #' 
-#' \code{findGivenNames} extracts from text unique terms and gets 
-#' the gender predicion for all these terms.
+#' \code{findGivenNames} extracts from text unique terms and predicts  
+#' gender for them.
 #' 
 #' 
-#' @param x A text vector or a character vector of unique terms prepared beforehand. 
+#' @param x A text vector or a character vector of unique terms 
+#' pre-processed earlier manually or by the \code{textPrepare} function.
 #' @param textPrepare If TRUE (default) the \code{textPrepare} function 
 #' will be used on the \code{x} vector. Set it to FALSE if you already 
 #' have prepared a character vector of cleaned up and deduplicated terms 
-#' that you want to send to the API for first name gender checking.
+#' that you want to send to the API for gender checking.
+#' @param country A character string with a country code for localized search
+#' of names. Country codes follow the ISO_3166-1 alpha-2 standard
+#' \url{https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2}.
+#' @param language A character string with a language code for localized search
+#' of names. Language codes follow the ISO_639-1 standard: 
+#' \url{https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes}
 #' @param apikey A character string with the API key obtained via 
-#' https://store.genderize.io. A default is NULL, which uses the free API plan.
-#'  If you reached the limit of the API you can start from the last checked 
-#'  term next time.
-#' @param queryLength How much terms can be checked in a one single query
-#' @param progress If TRUE (default) progress bar is displayed in the console
+#' \url{https://store.genderize.io}. A default is NULL, which uses the free API 
+#'  plan. If you reached the limit of the API you can start from the last 
+#'  checked term next time.
+#' @param queryLength How much terms can be checked in a one single query.
+#' @param progress If TRUE (default) progress bar is displayed in the console.
 #' @param ssl.verifypeer Checks the SSL Certificate. Default is TRUE. 
 #' You may set it to FALSE if you encounter some errors that break 
 #' the connection with the API (though it is not recommended).
@@ -29,7 +36,7 @@
 #' 
 #' 
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' 
 #' x = "Tom did play hookey, and he had a very good time. He got back home 
 #'      barely in season to help Jim, the small colored boy, saw next-day's wood 
@@ -58,6 +65,15 @@
 #' # 3: polly female        0.99   191
 #' # 4:   tom   male        1.00  3736
 #' 
+#' 
+#' # localization
+#' findGivenNames("andrea", country = "us")
+#' #      name gender probability count
+#' # 1: andrea female        0.97  2308
+#' 
+#' findGivenNames("andrea", country = "it")
+#' #      name gender probability count
+#' # 1: andrea  male         0.99  1070
 #' }
 #' 
 #' @export
@@ -65,6 +81,8 @@
 
 findGivenNames = function(x, 
                           textPrepare = TRUE,
+                          country = NULL,
+                          language = NULL,
                           apikey = NULL,
                           queryLength = 10, 
                           progress = TRUE,
@@ -128,6 +146,8 @@ findGivenNames = function(x,
         termsQuery = terms[packageFromIndex:packageEndIndex]
         
         responseAPI = genderizeAPI(termsQuery, 
+                                   country = country,
+                                   language = language,
                                    apikey = apikey,
                                    ssl.verifypeer = ssl.verifypeer
                                    )
@@ -173,10 +193,12 @@ findGivenNames = function(x,
             verbose(responseAPI)            
             
         }   
+        
+        if (progress) {
+          cat('\n')
+          cat('\n')  
+        }
     }
-    
-    cat('\n')
-    cat('\n')  
     
     if (is.null(dfResponse)) {
         

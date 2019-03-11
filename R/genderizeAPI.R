@@ -1,15 +1,29 @@
 #' Getting data from genderize.io  API
 #' 
-#' \code{genderizeAPI} connects with genderize.io API and checks if 
-#' a term (one or more) is in the given names database and returns 
-#' its gender probability and count of the cases recorded in the database.
+#' The \code{genderizeAPI} function connects to genderize.io API and checks if 
+#' a term (one or more) is in the genderize.io database and returns 
+#' predicted gender probability and count of the records with this 
+#' term in the database.
 #' 
 #' 
 #' @param x A vector of terms to check in genderize.io database.
-#' @param apikey A character string with the API key obtained via https://store.genderize.io. A default is NULL, which uses the free API plan.
-#' @param ssl.verifypeer Checks the SSL Certificate. Default is TRUE. 
+#' @param country A character string with a country code for localized search
+#' of names. Country codes follow the ISO_3166-1 alpha-2 standard
+#' \url{https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2}.
+#' @param language A character string with a language code for localized search
+#' of names. Language codes follow the ISO_639-1 standard: 
+#' \url{https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes}
+#' @param apikey A character string with the API key obtained via 
+#' \url{https://store.genderize.io}. A default is NULL, which uses the free API 
+#'  plan. If you reached the limit of the API you can start from the last 
+#'  checked term next time.
+#' @param ssl.verifypeer If TRUE (default) it checks the SSL Certificate. 
 #'
-#' @return A list of four elements: \code{response} is a data frame with names, genders, probabilities and counts or \code{NULL} if non of the terms are not located in the genderize.io database; \code{limitLeft} is showing how many queries to the API are still possible within the current \code{limit} which will be renewed in \code{limitReset} seconds.
+#' @return A list of four elements: \code{response} is a data frame with names, 
+#' genders, probabilities and counts or \code{NULL} if no terms are found 
+#' in the genderize.io database; \code{limitLeft} is showing how many API queries 
+#' are still possible within the current \code{limit} which will be renewed 
+#' in \code{limitReset} seconds.
 #' 
 #' 
 #' 
@@ -46,7 +60,9 @@
 #' @export
 
  
-genderizeAPI = function(x, 
+genderizeAPI = function(x,
+                        country = NULL,
+                        language = NULL,
                         apikey = NULL, 
                         ssl.verifypeer = TRUE
                         ) {
@@ -56,6 +72,19 @@ genderizeAPI = function(x,
     query = as.list(termsQuery)
     
     names(query)  = paste0('name[', 0:(length(termsQuery) - 1), ']')
+    
+    if (!is.null(country)) {
+      
+      query = c(query, 'country_id' = country)
+
+    }
+    
+    if (!is.null(language)) {
+
+      query = c(query, 'language_id' = language)
+    
+    }
+
     
     if (!is.null(apikey)) {
         
